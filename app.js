@@ -1,6 +1,7 @@
 //jshint esversion:6
 import express from "express";
 import mongoose from "mongoose";
+import encrypt from "mongoose-encryption";
 
 mongoose.connect("mongodb://localhost:27017/userDB");
 const app = express();
@@ -9,6 +10,9 @@ const userSchema = new mongoose.Schema({
 	email: String,
 	password: String,
 });
+
+const secret = "Thisisourlittlesecret.";
+userSchema.plugin(encrypt, { secret: secret, encryptedFields: ["password"] });
 
 const User = mongoose.model("User", userSchema);
 
