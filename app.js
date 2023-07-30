@@ -3,6 +3,9 @@ import express from "express";
 import mongoose from "mongoose";
 import encrypt from "mongoose-encryption";
 import md5 from "md5";
+import bcrypt from "bcrypt";
+
+const saltRounds = 10;
 
 mongoose.connect("mongodb://localhost:27017/userDB");
 const app = express();
@@ -35,33 +38,38 @@ app.get("/login", function (req, res) {
 });
 
 app.post("/register", function (req, res) {
-	const user = new User({
-		email: req.body.username,
-		password: md5(req.body.password),
-	});
-
-	user
-		.save()
-		.then(() => {
-			res.render("secrets");
-		})
-		.catch((err) => {
-			console.log(err);
+	bcrypt.hash(req.body.password, saltRounds, function (err, hash) {
+		// Store hash in your password DB.
+		const user = new User({
+			email: req.body.username,
+			password: hash,
 		});
+
+		user
+			.save()
+			.then(() => {
+				res.render("secrets");
+			})
+			.catch((err) => {
+				console.log(err);
+			});
+	});
 });
 
 app.post("/login", function (req, res) {
 	const username = req.body.username;
-	const password = md5(req.body.password);
+	const password = req.body.password;
 
 	User.findOne({ email: username })
 		.then((foundUser) => {
 			if (foundUser) {
-				if (foundUser.password === password) {
-					res.render("secrets");
-				} else {
-					res.send("Incorrect Password");
-				}
+				bcrypt.compare(password, foundUser.password, function (err, result) {
+					if (result === true) {
+						res.render("secrets");
+					} else {
+						res.send("Incorrect Password");
+					}
+				});
 			} else {
 				res.send("No User Exist");
 			}
