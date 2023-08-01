@@ -1,7 +1,7 @@
 # Authentication
 ### Different types of Web Authentication covered in this repository. You just need to backtrack to the commit of that level of Authentication.
 ### Steps to follow :-
-### 🚩 Fork/clone the repo >> Then trace back to the code version using command ``` git checkout <commit Id>``` >> install the node modules
+#### 🚩 Fork/clone the repo >> Then trace back to the code version using command ``` git checkout <commit Id>``` >> install the node modules
 
 
 ## Commits🌟
